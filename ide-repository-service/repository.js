@@ -45,11 +45,25 @@ angular.module('ideRepository', [])
                     });
             }.bind(this);
 
+            let remove = function (resourcePath) {
+                if (resourcePath !== undefined && !(typeof resourcePath === 'string'))
+                    throw Error("remove: resourcePath must be a path");
+                let url = new UriBuilder().path(this.repositoryServiceUrl.split('/')).path(resourcePath.split('/')).build();
+                return $http.delete(url, { headers: { 'describe': 'application/json' } })
+                    .then(function successCallback(response) {
+                        return { status: response.status };
+                    }, function errorCallback(response) {
+                        console.error('Repository service:', response);
+                        return { status: response.status };
+                    });
+            }.bind(this);
+
             return {
                 getMetadata: getMetadata,
                 load: loadRepository,
                 createCollection: createCollection,
                 createResource: createResource,
+                remove: remove,
             };
         }];
     });
